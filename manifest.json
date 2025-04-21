@@ -17,7 +17,9 @@
     {
       "matches": [
         "https://www.amazon.co.jp/gp/video/*",
-        "https://tver.jp/episodes/*"
+        "https://tver.jp/episodes/*",
+        "https://www.youtube.com/*",
+        "https://abema.tv/video/episode/*"
       ],
       "js": [
         "dist/contentScript/main.js"

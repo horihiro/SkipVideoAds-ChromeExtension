@@ -8,8 +8,10 @@
       "runtimeArgs": [
         "--remote-debugging-port=9222",
         "--load-extension=${workspaceFolder}", // this is the path to the extension folder
-        // "https://www.amazon.co.jp/gp/video/detail/B0D8Z98TZZ/ref=atv_hm_hom_c_QCWwEO_brws_3_4?jic=8%7CEgRzdm9k",
-        "https://tver.jp/episodes/epliuaozea"
+        // "https://www.amazon.co.jp/Amazon-Video/b/",
+        // "https://tver.jp/",
+        // "https://www.youtube.com/feed/trending",
+        // "https://abema.tv/video/"
       ],
       "env": {
         "CHROME_DEVELOPER_TOOLS": true
@@ -23,7 +25,10 @@
       "runtimeArgs": [
         "--remote-debugging-port=9222",
         "--load-extension=${workspaceFolder}", // this is the path to the extension folder
-        "https://www.amazon.co.jp/gp/video/detail/B0D8Z98TZZ/ref=atv_hm_hom_c_QCWwEO_brws_3_4?jic=8%7CEgRzdm9k"
+        // "https://www.amazon.co.jp/Amazon-Video/b/",
+        // "https://tver.jp/",
+        // "https://www.youtube.com/feed/trending",
+        // "https://abema.tv/video/"
       ],
       "env": {
         "CHROME_DEVELOPER_TOOLS": true
