@@ -1,21 +1,18 @@
 import { Vod } from './vod';
 import { AmazonPrimeVideo } from './vods/amazon_prime_video';
-import { TVer } from './vods/tver';
 import { YouTube } from './vods/youtube';
-import { AbemaTV } from './vods/abema_tv';
+import { IMASdk } from './vods/ima_sdk';
 
 (() => {
   const vod:Vod = (() => {
-    const hostname = window.location.hostname;
+    const href = window.location.href;
     switch (true) {
-      case /amazon\.(com|co\.jp)$/.test(hostname):
+      case /amazon\.(com|co\.jp)\//.test(href):
         return new AmazonPrimeVideo();
-      case /tver\.jp$/.test(hostname):
-        return new TVer();
-      case /youtube\.com$/.test(hostname):
+      case /youtube\.com/.test(href):
         return new YouTube();
-      case /abema\.tv$/.test(hostname):
-        return new AbemaTV();
+      case window["ima"]:
+          return new IMASdk();
       default:
         return null;
     }

@@ -5,8 +5,7 @@
   "version": "0.0.1",
   "version_name": "0.0.1-abc",
   "description": "A Chrome extension that skips video ads.",
-  "permissions": [
-  ],
+  "permissions": [],
   "action": {
     "default_icon": "img/icon128.png"
   },
@@ -16,16 +15,12 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.amazon.co.jp/gp/video/*",
-        "https://tver.jp/episodes/*",
-        "https://www.youtube.com/*",
-        "https://abema.tv/video/episode/*"
+        "https://*/*"
       ],
       "js": [
         "dist/contentScript/main.js"
       ]
     }
   ],
-  "background": {
-  }
+  "background": {}
 }
