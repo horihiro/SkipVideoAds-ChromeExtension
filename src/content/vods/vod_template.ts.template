@@ -1,0 +1,6 @@
+import { Vod } from "../vod"; 
+export class VodTemplate extends Vod {
+  startWatching(): void {
+
+  }
+}

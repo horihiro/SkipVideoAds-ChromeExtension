@@ -1,0 +1,34 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome",
+      "runtimeArgs": [
+        "--remote-debugging-port=9222",
+        "--load-extension=${workspaceFolder}", // this is the path to the extension folder
+        // "https://www.amazon.co.jp/gp/video/detail/B0D8Z98TZZ/ref=atv_hm_hom_c_QCWwEO_brws_3_4?jic=8%7CEgRzdm9k",
+        "https://tver.jp/episodes/epliuaozea"
+      ],
+      "env": {
+        "CHROME_DEVELOPER_TOOLS": true
+      },
+      "preLaunchTask": "build"
+    },
+    {
+      "type": "msedge",
+      "request": "launch",
+      "name": "Launch Edge",
+      "runtimeArgs": [
+        "--remote-debugging-port=9222",
+        "--load-extension=${workspaceFolder}", // this is the path to the extension folder
+        "https://www.amazon.co.jp/gp/video/detail/B0D8Z98TZZ/ref=atv_hm_hom_c_QCWwEO_brws_3_4?jic=8%7CEgRzdm9k"
+      ],
+      "env": {
+        "CHROME_DEVELOPER_TOOLS": true
+      },
+      "preLaunchTask": "build"
+    }
+  ]
+}
