@@ -5,12 +5,14 @@ import { TVer } from './vods/tver';
 (() => {
   const vod:Vod = (() => {
     const hostname = window.location.hostname;
-    if (/amazon\.(com|co\.jp)$/.test(hostname)) {
-      return new AmazonPrimeVideo();
-    } else if (/tver\.jp$/.test(hostname)) {
-      return new TVer();
-    }      
-    return null;
+    switch (true) {
+      case /amazon\.(com|co\.jp)$/.test(hostname):
+        return new AmazonPrimeVideo();
+      case /tver\.jp$/.test(hostname):
+        return new TVer();
+      default:
+        return null;
+    }
   })();
   if (!vod) {
     console.error('No VOD found for this page');
