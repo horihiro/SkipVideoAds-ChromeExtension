@@ -2,18 +2,17 @@ import { Vod } from "../vod";
 export class IMASdk extends Vod {
   startWatching(): void {
     const bodyObserver = new MutationObserver(() => {
-      const videoElms: HTMLMediaElement[] = (Array.from(document.querySelectorAll('video[title="Advertisement"]')) as HTMLMediaElement[]).filter(e => !e.onplay);
+      const videoElms: HTMLMediaElement[] = (Array.from(document.querySelectorAll('video[title="Advertisement"]')) as HTMLMediaElement[]).filter(e => !e.ontimeupdate);
       if (videoElms.length === 0) return;
       videoElms.forEach(videoElm => {
-        videoElm.onplay = async (e) => {
+        const ontimeupdate = (e) => {
+          if (e.target.duration - e.target.currentTime <= this.TIMEGAP) return;
           const video = (e.target as HTMLMediaElement);
-          // const currentDisplayStyle = video.style.display;
-          video.style.display = 'none';
           const skipTime = video.duration - video.currentTime;
           if (skipTime <= 0) return;
           super.skipVideo(e.target as HTMLMediaElement, skipTime);
-          // video.style.display = currentDisplayStyle;
         };
+        videoElm.ontimeupdate = ontimeupdate;
       });
     });
     bodyObserver.observe(document.body, {

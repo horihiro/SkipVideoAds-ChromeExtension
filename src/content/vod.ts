@@ -1,16 +1,14 @@
 export class Vod {
+  protected TIMEGAP: number;
+  constructor() {
+    this.TIMEGAP = 0.1;
+  }
   startWatching() {
     console.error('Need to implement startWatching');
     throw new Error('Not implemented');
   }
 
-  async skipVideo(videoElm: HTMLMediaElement, skipTimeInSecond: number) {
-    // while (true) {
-    //   // if (videoElm.paused) {
-    //   //   await new Promise(resolve => setTimeout(resolve, 100));
-    //   //   continue;
-    //   // }
-    // }
-    videoElm.currentTime += skipTimeInSecond - 0.01;
+  skipVideo(videoElm: HTMLMediaElement, skipTimeInSecond: number) {
+    videoElm.currentTime += skipTimeInSecond - this.TIMEGAP;
   }
 }

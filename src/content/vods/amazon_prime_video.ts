@@ -33,6 +33,7 @@ export class AmazonPrimeVideo extends Vod {
       const videoElm: HTMLMediaElement = (Array.from(document.querySelectorAll('video[src^="blob:"]')) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
       if (!videoElm) return;
       const ontimeupdate = async (e) => {
+        if (e.target.duration - e.target.currentTime <= this.TIMEGAP) return;
         const remainingTime = document.querySelector('.atvwebplayersdk-ad-timer-remaining-time');
         if (!remainingTime || !remainingTime.checkVisibility()) return;
 
@@ -41,9 +42,7 @@ export class AmazonPrimeVideo extends Vod {
         console.debug('Ad remaining time:', time);
         const minAndSec = time.split(':').map((t) => parseInt(t));
   
-        videoElm.ontimeupdate = null;
         super.skipVideo(videoElm, minAndSec[0] * 60 + minAndSec[1] - 0.1);
-        videoElm.ontimeupdate = ontimeupdate;
       };
       videoElm.ontimeupdate = ontimeupdate;
       // bodyObserver.disconnect();
