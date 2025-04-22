@@ -9,6 +9,7 @@ export class Vod {
   }
 
   skipVideo(videoElm: HTMLMediaElement, skipTimeInSecond: number) {
+    console.debug(`Skipped: ${skipTimeInSecond} [sec]`);
     videoElm.currentTime += skipTimeInSecond - this.TIMEGAP;
   }
 }
