@@ -6,7 +6,7 @@ export class YouTube extends Vod {
       if (!videoElm) return;
       const ontimeupdate = async (e) => {
         if (document.querySelectorAll('.video-ads').length <= 0 || document.querySelectorAll('.video-ads')[0].childNodes.length <= 0) {
-          this.telop.parentNode && this.telop.remove();
+          this.overlay.parentNode && this.overlay.remove();
           return;
         }
         const video = (e.target as HTMLMediaElement);
@@ -18,8 +18,8 @@ export class YouTube extends Vod {
         //   await new Promise(resolve => setTimeout(resolve, 1000));
         //   button.dispatchEvent(new MouseEvent('click'));          // return;
         // }
-        this.telop.style.height = videoElm.style.height;
-        videoElm.parentElement?.appendChild(this.telop);
+        this.overlay.style.height = videoElm.style.height;
+        videoElm.parentElement?.appendChild(this.overlay);
         const skipTime = video.duration - video.currentTime;
         if (skipTime <= 0) return;
         this.skipVideo(e.target as HTMLMediaElement, skipTime);

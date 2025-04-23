@@ -9,7 +9,7 @@ export class IMASdk extends Vod {
       const videoElms: HTMLMediaElement[] = (Array.from(document.querySelectorAll('video[title="Advertisement"]')) as HTMLMediaElement[]).filter(e => !e.ontimeupdate);
       if (videoElms.length === 0) return;
       videoElms.forEach(videoElm => {
-        videoElm.parentElement?.appendChild(this.telop.cloneNode(true) as HTMLDivElement);
+        videoElm.parentElement?.appendChild(this.overlay.cloneNode(true) as HTMLDivElement);
         const ontimeupdate = (e) => {
           if (e.target.duration - e.target.currentTime <= this.TIMEGAP*2) return;
           const video = (e.target as HTMLMediaElement);

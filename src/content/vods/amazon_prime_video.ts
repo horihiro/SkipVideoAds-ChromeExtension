@@ -8,11 +8,11 @@ export class AmazonPrimeVideo extends Vod {
       const ontimeupdate = async (e) => {
         const remainingTime = document.querySelector('.atvwebplayersdk-ad-timer-remaining-time');
         if (!remainingTime || !remainingTime.checkVisibility() || videoElm.style.visibility === 'hidden') {
-          this.telop.remove();
+          this.overlay.remove();
           return;
         }
 
-        videoElm.parentElement?.appendChild(this.telop);
+        videoElm.parentElement?.appendChild(this.overlay);
         const time = remainingTime.textContent;
         if (!time) return;
         const minAndSec = time.split(':').map((t) => parseInt(t));
