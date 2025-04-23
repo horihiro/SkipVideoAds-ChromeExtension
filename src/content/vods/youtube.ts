@@ -18,6 +18,7 @@ export class YouTube extends Vod {
         //   await new Promise(resolve => setTimeout(resolve, 1000));
         //   button.dispatchEvent(new MouseEvent('click'));          // return;
         // }
+        this.telop.style.height = videoElm.style.height;
         videoElm.parentElement?.appendChild(this.telop);
         const skipTime = video.duration - video.currentTime;
         if (skipTime <= 0) return;
