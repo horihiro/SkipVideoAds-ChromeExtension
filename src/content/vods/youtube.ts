@@ -5,13 +5,19 @@ export class YouTube extends Vod {
       const videoElm: HTMLMediaElement = (Array.from(document.querySelectorAll('video.video-stream.html5-main-video')) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
       if (!videoElm) return;
       const ontimeupdate = async (e) => {
-        if (document.querySelectorAll('.video-ads')[0].childNodes.length <= 0) {
+        if (document.querySelectorAll('.video-ads').length <= 0 || document.querySelectorAll('.video-ads')[0].childNodes.length <= 0) {
           this.telop.parentNode && this.telop.remove();
           return;
         }
         const video = (e.target as HTMLMediaElement);
         if (isNaN(video.duration) || isNaN(video.currentTime) || video.currentTime <= 0 || video.duration <= 0) return;
 
+        // const button: HTMLDivElement = document.querySelector('div.ytp-skip-ad') as HTMLDivElement;
+        // if (button) {
+        //   console.debug('button', button.checkVisibility(), button.parentElement.outerHTML);
+        //   await new Promise(resolve => setTimeout(resolve, 1000));
+        //   button.dispatchEvent(new MouseEvent('click'));          // return;
+        // }
         videoElm.parentElement?.appendChild(this.telop);
         const skipTime = video.duration - video.currentTime;
         if (skipTime <= 0) return;
