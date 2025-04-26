@@ -1,7 +1,9 @@
 export class Vod {
   protected TIMEGAP: number;
   protected overlay: HTMLDivElement;
+  protected skipMode: string;
   constructor() {
+    this.skipMode = 'auto';
     this.TIMEGAP = 0.1;
     this.overlay = document.createElement('div');
     this.overlay.className = 'skip-vod-overlay';
