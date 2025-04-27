@@ -16,19 +16,20 @@ export class YouTube extends Vod {
       const videoElm: HTMLMediaElement = (Array.from(document.querySelectorAll(this.selectorVideo)) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
       if (!videoElm) return;
       const ontimeupdate = async (e) => {
+        const overlay = this.getOverlay(skipMode);
         if (document.querySelectorAll('.ytp-ad-player-overlay-layout').length < 1) {
-          this.overlay.parentElement && this.overlay.remove();
+          overlay.parentElement && overlay.remove();
           return;
         }
         const video = (e.target as HTMLMediaElement);
         if (isNaN(video.duration) || isNaN(video.currentTime) || video.currentTime <= 0 || video.duration <= 0) return;
 
-        this.overlay.style.height = videoElm.style.height;
-        videoElm.parentElement?.appendChild(this.overlay);
+        overlay.style.height = videoElm.style.height;
+        videoElm.parentElement?.appendChild(overlay);
         if (skipMode === SkipMode.auto) {
           this.seekToEnd(videoElm);
         } else if (skipMode === SkipMode.manual) {
-          const clickTarget = this.overlay;
+          const clickTarget = overlay;
           if (!clickTarget.onclick) {
             clickTarget.onclick = () => {
               this.seekToEnd(video);

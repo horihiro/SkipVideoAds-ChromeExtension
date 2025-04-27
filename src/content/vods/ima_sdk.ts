@@ -18,12 +18,12 @@ export class IMASdk extends Vod {
     this.observer = new MutationObserver(() => {
       const adVideoElms: HTMLMediaElement[] = (Array.from(document.querySelectorAll(this.selectorVideo)) as HTMLMediaElement[])
       .filter(v => {
-        return (v.parentElement?.lastChild as HTMLElement).className !== this.overlay.className;
+        return (v.parentElement?.lastChild as HTMLElement).className !== this.selectorOverlay;
       });
       if (adVideoElms.length === 0) return;
       if (skipMode === SkipMode.auto) {
         adVideoElms.forEach(videoElm => {
-          const overlay = this.overlay.cloneNode(true) as HTMLDivElement;
+          const overlay = this.getOverlay(skipMode).cloneNode(true) as HTMLDivElement;
           videoElm.parentElement?.appendChild(overlay);
           videoElm.ontimeupdate = (e) => {
             this.seekToEnd(e.target as HTMLMediaElement);
@@ -31,7 +31,7 @@ export class IMASdk extends Vod {
         });
       } else if (skipMode === SkipMode.manual) {
         adVideoElms.forEach(videoElm => {
-          const overlay = this.overlay.cloneNode(true) as HTMLDivElement;
+          const overlay = this.getOverlay(skipMode).cloneNode(true) as HTMLDivElement;
           videoElm.parentElement?.appendChild(overlay);
         });
         const clickTarget = Array(6).fill(0).reduce((e) => {

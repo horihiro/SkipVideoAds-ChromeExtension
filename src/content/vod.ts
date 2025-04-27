@@ -7,22 +7,24 @@ export type SkipMode = typeof SkipMode[keyof typeof SkipMode];
 
 export class Vod {
   protected TIMEGAP: number;
-  protected overlay: HTMLDivElement;
+  private overlayElm: HTMLDivElement;
   protected observer: MutationObserver;
   protected selectorOverlay: string = 'skip-vod-overlay' as const;
   constructor() {
     this.observer = null;
     this.TIMEGAP = 0.1;
-    this.overlay = document.createElement('div');
-    this.overlay.className = this.selectorOverlay;
-    this.overlay.style.position = 'absolute';
-    this.overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    this.overlay.style.top = '0';
-    this.overlay.style.left = '0';
-    this.overlay.style.width = '100%';
-    this.overlay.style.height = '100%';
-    this.overlay.style.color = 'white';
-    this.overlay.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 50">
+    this.overlayElm = document.createElement('div');
+    this.overlayElm.className = this.selectorOverlay;
+  }
+  getOverlay(skipMode: SkipMode = SkipMode.auto): HTMLDivElement {
+    this.overlayElm.style.position = 'absolute';
+    this.overlayElm.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    this.overlayElm.style.top = '0';
+    this.overlayElm.style.left = '0';
+    this.overlayElm.style.width = '100%';
+    this.overlayElm.style.height = '100%';
+    this.overlayElm.style.color = 'white';
+    this.overlayElm.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 50">
   <polygon points="32,18 45,25 32,32" fill="white">
     <animate
       attributeName="opacity"
@@ -45,6 +47,7 @@ export class Vod {
       repeatCount="indefinite" />
   </polygon>
 </svg>`
+    return this.overlayElm;
   }
   startWatching(skipMode: SkipMode = SkipMode.auto) {
     console.error('Need to implement startWatching');

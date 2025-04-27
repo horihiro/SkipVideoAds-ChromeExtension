@@ -22,17 +22,18 @@ export class AmazonPrimeVideo extends Vod {
       if (!videoElm) return;
       const ontimeupdate = async (e) => {
         const remainingTime = document.querySelector('.atvwebplayersdk-ad-timer-remaining-time');
+        const overlay = this.getOverlay(skipMode);
         if (!remainingTime || !remainingTime.checkVisibility() || videoElm.style.visibility === 'hidden') {
-          this.overlay.parentElement && this.overlay.remove();
+          overlay.parentElement && overlay.remove();
           return;
         }
 
-        !this.overlay.parentElement && videoElm.closest('.webPlayerSDKContainer').appendChild(this.overlay);
+        !overlay.parentElement && videoElm.closest('.webPlayerSDKContainer').appendChild(overlay);
 
         if (skipMode === SkipMode.auto) {
           this.seekToEnd(videoElm);
         } else if (skipMode === SkipMode.manual) {
-          const clickTarget = this.overlay;
+          const clickTarget = overlay;
           if (!clickTarget.onclick) {
             clickTarget.onclick = () => {
               this.seekToEnd(videoElm);
