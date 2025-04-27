@@ -5,7 +5,9 @@
   "version": "0.0.1",
   "version_name": "0.0.1-ajisai",
   "description": "A Chrome extension that skips video ads on Video platforms.",
-  "permissions": [],
+  "permissions": [
+    "storage"
+  ],
   "action": {
     "default_icon": "img/icon128.png"
   },

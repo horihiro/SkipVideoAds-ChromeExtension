@@ -4,8 +4,11 @@ import { YouTube } from './vods/youtube';
 import { IMASdk } from './vods/ima_sdk';
 
 (() => {
+  const defaultSkipMode:SkipMode = SkipMode.auto;
+
   window.addEventListener('load', async () => {
-    const vod: Vod = ((href) => {
+    let observer: MutationObserver | null = null;
+    const init = (href) => {
       switch (true) {
         case /amazon\.(com|co\.jp)\//.test(href):
           console.debug('Amazon Prime Video detected');
@@ -19,13 +22,15 @@ import { IMASdk } from './vods/ima_sdk';
             console.debug('IMA SDK detected');
             return new IMASdk();
           }
-          const observer = new MutationObserver(() => {
+          observer && observer.disconnect();
+          observer = new MutationObserver(async () => {
             if (!document.querySelector(imaSelector)) return;
 
             observer.disconnect();
             console.debug('IMA SDK detected');
             const vod = new IMASdk();
-            vod.startWatching();
+            const { skipMode } = (await chrome.storage.local.get(['skipMode']));
+            vod.startWatching(skipMode || defaultSkipMode);
           });
           observer.observe(document.body, {
             childList: true,
@@ -34,9 +39,18 @@ import { IMASdk } from './vods/ima_sdk';
           console.debug('Observing for IMA SDK...');
           return null;
       }
-    })(window.location.href);
+    };
+    const vod: Vod = init(location.href);
     if (!vod) return;
 
-    vod.startWatching(SkipMode.manual);
+    const { skipMode } = (await chrome.storage.local.get(['skipMode']));
+    vod.startWatching(skipMode || defaultSkipMode);
+
+    chrome.storage.onChanged.addListener(async (changes, area) => {
+      if (area !== 'local') return;
+
+      const { skipMode } = (await chrome.storage.local.get(['skipMode']));
+      vod.startWatching(skipMode || defaultSkipMode);
+    });
   });
 })();
