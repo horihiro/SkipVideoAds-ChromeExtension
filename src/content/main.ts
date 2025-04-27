@@ -1,4 +1,4 @@
-import { Vod } from './vod';
+import { SkipMode, Vod } from './vod';
 import { AmazonPrimeVideo } from './vods/amazon_prime_video';
 import { YouTube } from './vods/youtube';
 import { IMASdk } from './vods/ima_sdk';
@@ -37,6 +37,6 @@ import { IMASdk } from './vods/ima_sdk';
     })(window.location.href);
     if (!vod) return;
 
-    vod.startWatching();
+    vod.startWatching(SkipMode.manual);
   });
 })();

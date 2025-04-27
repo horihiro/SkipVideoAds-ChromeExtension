@@ -1,12 +1,20 @@
+export const SkipMode = {
+  auto: 'auto',
+  manual: 'manual',
+} as const;
+
+export type SkipMode = typeof SkipMode[keyof typeof SkipMode];
+
 export class Vod {
   protected TIMEGAP: number;
   protected overlay: HTMLDivElement;
-  protected skipMode: string;
+  protected observer: MutationObserver;
+  protected selectorOverlay: string = 'skip-vod-overlay' as const;
   constructor() {
-    this.skipMode = 'auto';
+    this.observer = null;
     this.TIMEGAP = 0.1;
     this.overlay = document.createElement('div');
-    this.overlay.className = 'skip-vod-overlay';
+    this.overlay.className = this.selectorOverlay;
     this.overlay.style.position = 'absolute';
     this.overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
     this.overlay.style.top = '0';
@@ -38,7 +46,7 @@ export class Vod {
   </polygon>
 </svg>`
   }
-  startWatching() {
+  startWatching(skipMode: SkipMode = SkipMode.auto) {
     console.error('Need to implement startWatching');
     throw new Error('Not implemented');
   }

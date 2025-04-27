@@ -1,9 +1,6 @@
-import { Vod } from "../vod";
+import { SkipMode, Vod } from "../vod";
 export class IMASdk extends Vod {
-  constructor() {
-    super();
-    this.TIMEGAP = 0.1;
-  }
+  protected selectorVideo: string = 'video[title="Advertisement"]' as const;
   seekToEnd(videoElm: HTMLMediaElement) {
     if (!videoElm) return;
     if (videoElm.duration - videoElm.currentTime <= this.TIMEGAP * 2) return;
@@ -12,14 +9,19 @@ export class IMASdk extends Vod {
     if (skipTime <= 0) return;
     this.skipVideo(videoElm as HTMLMediaElement, skipTime);
   }
-  startWatching(): void {
-    const bodyObserver = new MutationObserver(() => {
-      const adVideoElms: HTMLMediaElement[] = (Array.from(document.querySelectorAll('video[title="Advertisement"]')) as HTMLMediaElement[])
+  startWatching(skipMode: SkipMode = 'auto'): void {
+    // initialization
+    this.observer && this.observer.disconnect();
+    Array.from(document.querySelectorAll(this.selectorOverlay)).forEach(e => e.remove());
+    (Array.from(document.querySelectorAll(this.selectorVideo)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
+
+    this.observer = new MutationObserver(() => {
+      const adVideoElms: HTMLMediaElement[] = (Array.from(document.querySelectorAll(this.selectorVideo)) as HTMLMediaElement[])
       .filter(v => {
         return (v.parentElement?.lastChild as HTMLElement).className !== this.overlay.className;
       });
       if (adVideoElms.length === 0) return;
-      if (this.skipMode === 'auto') {
+      if (skipMode === 'auto') {
         adVideoElms.forEach(videoElm => {
           const overlay = this.overlay.cloneNode(true) as HTMLDivElement;
           videoElm.parentElement?.appendChild(overlay);
@@ -27,7 +29,7 @@ export class IMASdk extends Vod {
             this.seekToEnd(e.target as HTMLMediaElement);
           };
         });
-      } else if (this.skipMode === 'manual') {
+      } else if (skipMode === 'manual') {
         adVideoElms.forEach(videoElm => {
           const overlay = this.overlay.cloneNode(true) as HTMLDivElement;
           videoElm.parentElement?.appendChild(overlay);
@@ -36,11 +38,11 @@ export class IMASdk extends Vod {
           return e.parentElement || e;
         }, document.querySelector('iframe[id^="goog_"]'));
         clickTarget.onclick = (e) => {
-            this.seekToEnd((Array.from(document.querySelectorAll('video[title="Advertisement"]')) as HTMLMediaElement[]).find(v => !v.ended));
+            this.seekToEnd((Array.from(document.querySelectorAll(this.selectorVideo)) as HTMLMediaElement[]).find(v => !v.ended));
         };
       }
     });
-    bodyObserver.observe(document.body, {
+    this.observer.observe(document.body, {
       childList: true,
       subtree: true,
     });
