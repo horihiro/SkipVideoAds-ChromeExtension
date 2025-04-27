@@ -31,7 +31,7 @@ import { IMASdk } from './vods/ima_sdk';
             childList: true,
             subtree: true,
           });
-          console.warn('Observing for IMA SDK...');
+          console.debug('Observing for IMA SDK...');
           return null;
       }
     })(window.location.href);
