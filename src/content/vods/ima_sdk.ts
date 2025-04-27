@@ -9,7 +9,7 @@ export class IMASdk extends Vod {
     if (skipTime <= 0) return;
     this.skipVideo(videoElm as HTMLMediaElement, skipTime);
   }
-  startWatching(skipMode: SkipMode = 'auto'): void {
+  startWatching(skipMode: SkipMode = SkipMode.auto): void {
     // initialization
     this.observer && this.observer.disconnect();
     Array.from(document.querySelectorAll(this.selectorOverlay)).forEach(e => e.remove());
@@ -21,7 +21,7 @@ export class IMASdk extends Vod {
         return (v.parentElement?.lastChild as HTMLElement).className !== this.overlay.className;
       });
       if (adVideoElms.length === 0) return;
-      if (skipMode === 'auto') {
+      if (skipMode === SkipMode.auto) {
         adVideoElms.forEach(videoElm => {
           const overlay = this.overlay.cloneNode(true) as HTMLDivElement;
           videoElm.parentElement?.appendChild(overlay);
@@ -29,7 +29,7 @@ export class IMASdk extends Vod {
             this.seekToEnd(e.target as HTMLMediaElement);
           };
         });
-      } else if (skipMode === 'manual') {
+      } else if (skipMode === SkipMode.manual) {
         adVideoElms.forEach(videoElm => {
           const overlay = this.overlay.cloneNode(true) as HTMLDivElement;
           videoElm.parentElement?.appendChild(overlay);
