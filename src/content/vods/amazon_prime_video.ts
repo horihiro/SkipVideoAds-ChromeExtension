@@ -12,6 +12,7 @@ export class AmazonPrimeVideo extends Vod {
 }
 
   startWatching(skipMode: SkipMode = 'auto'): void {
+    if (skipMode === SkipMode.none) return;
     // initialization
     this.observer && this.observer.disconnect();
     Array.from(document.querySelectorAll(this.selectorOverlay)).forEach(e => e.remove());

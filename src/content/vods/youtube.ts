@@ -7,6 +7,8 @@ export class YouTube extends Vod {
     this.skipVideo(videoElm, skipTime);
   }
   startWatching(skipMode: SkipMode = SkipMode.auto): void {
+    if (skipMode === SkipMode.none) return;
+
     // initialization
     this.observer && this.observer.disconnect();
     Array.from(document.querySelectorAll(this.selectorOverlay)).forEach(e => e.remove());

@@ -10,6 +10,8 @@ export class IMASdk extends Vod {
     this.skipVideo(videoElm as HTMLMediaElement, skipTime);
   }
   startWatching(skipMode: SkipMode = SkipMode.auto): void {
+    if (skipMode === SkipMode.none) return;
+
     // initialization
     this.observer && this.observer.disconnect();
     Array.from(document.querySelectorAll(this.selectorOverlay)).forEach(e => e.remove());
