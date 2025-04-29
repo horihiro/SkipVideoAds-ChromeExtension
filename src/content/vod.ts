@@ -47,7 +47,7 @@ ${skipMode === SkipMode.auto ? `<path transform="matrix(0 0.016 -0.016 0 46 17)"
       dur="0.5s"
       repeatCount="indefinite" />
   </path>
-` : `<path transform="matrix(0 0.016 -0.016 0 57 17)" d="m500 133c-10 0-20 5-25 15l-375 652c-30 50-25 75 25 75l375-0.26172 375 0.26172c50 0 55-25 25-75l-375-652c-5-10-15-15-25-15z" fill="white" stroke-width="3.7796">
+` : (SkipMode.manual ? `<path transform="matrix(0 0.016 -0.016 0 57 17)" d="m500 133c-10 0-20 5-25 15l-375 652c-30 50-25 75 25 75l375-0.26172 375 0.26172c50 0 55-25 25-75l-375-652c-5-10-15-15-25-15z" fill="white" stroke-width="3.7796">
     <animate
       attributeName="opacity"
       values="1;0;1"
@@ -61,7 +61,7 @@ ${skipMode === SkipMode.auto ? `<path transform="matrix(0 0.016 -0.016 0 46 17)"
       dur="1.5s"
       repeatCount="indefinite" />
   </rect>
-`}</svg>`
+`: '')}</svg>`
     return this.overlayElm;
   }
   static isAvaulable(): boolean {
