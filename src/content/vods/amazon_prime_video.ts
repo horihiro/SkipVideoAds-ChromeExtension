@@ -1,7 +1,11 @@
 import { SkipMode, Vod } from '../vod';
 
 export class AmazonPrimeVideo extends Vod {
-  protected selectorVideo: string = 'video[src^="blob:"]' as const;
+  protected static SELECTOR_VIDEO: string = 'video[src^="blob:"]' as const;
+
+  static isAvailable(): boolean {
+    return /amazon\.(com|co\.jp)\//.test(location.href);
+  }
 
   seekToEnd(videoElm: HTMLMediaElement) {
     const remainingTime = document.querySelector('.atvwebplayersdk-ad-timer-remaining-time');
@@ -16,10 +20,10 @@ export class AmazonPrimeVideo extends Vod {
     // initialization
     this.observer && this.observer.disconnect();
     Array.from(document.querySelectorAll(this.selectorOverlay)).forEach(e => e.remove());
-    (Array.from(document.querySelectorAll(this.selectorVideo)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
+    (Array.from(document.querySelectorAll(AmazonPrimeVideo.SELECTOR_VIDEO)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
 
     this.observer = new MutationObserver(() => {
-      const videoElm: HTMLMediaElement = (Array.from(document.querySelectorAll(this.selectorVideo)) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
+      const videoElm: HTMLMediaElement = (Array.from(document.querySelectorAll(AmazonPrimeVideo.SELECTOR_VIDEO)) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
       if (!videoElm) return;
       const ontimeupdate = async (e) => {
         const remainingTime = document.querySelector('.atvwebplayersdk-ad-timer-remaining-time');

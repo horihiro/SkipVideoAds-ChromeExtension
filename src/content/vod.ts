@@ -64,6 +64,10 @@ ${skipMode === SkipMode.auto ? `<path transform="matrix(0 0.016 -0.016 0 46 17)"
 `}</svg>`
     return this.overlayElm;
   }
+  static isAvaulable(): boolean {
+    console.error('Need to implement startWatching');
+    throw new Error('Not implemented');
+  }
   startWatching(skipMode: SkipMode = SkipMode.auto) {
     console.error('Need to implement startWatching');
     throw new Error('Not implemented');

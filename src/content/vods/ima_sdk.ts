@@ -1,6 +1,15 @@
 import { SkipMode, Vod } from "../vod";
 export class IMASdk extends Vod {
-  protected selectorVideo: string = 'video[title="Advertisement"]' as const;
+  protected static SELECTOR_VIDEO_VJS: string = 'video#vjs_video_3_html5_api' as const;
+  protected static SELECTOR_VIDEO_AD: string = 'video[title="Advertisement"], video[src^="https://"]' as const;
+  protected static SELECTOR_IMA_SDK: string = 'script[src$="ima3.js"]' as const;
+
+  static isAvailable(): boolean {
+    return !!document.querySelector(IMASdk.SELECTOR_IMA_SDK)
+        || !!document.querySelector(IMASdk.SELECTOR_VIDEO_AD)
+        || !!document.querySelector(IMASdk.SELECTOR_VIDEO_VJS);
+  }
+
   seekToEnd(videoElm: HTMLMediaElement) {
     if (!videoElm) return;
     if (videoElm.duration - videoElm.currentTime <= this.TIMEGAP * 2) return;
@@ -15,13 +24,13 @@ export class IMASdk extends Vod {
     // initialization
     this.observer && this.observer.disconnect();
     Array.from(document.querySelectorAll(this.selectorOverlay)).forEach(e => e.remove());
-    (Array.from(document.querySelectorAll(this.selectorVideo)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
+    (Array.from(document.querySelectorAll(IMASdk.SELECTOR_VIDEO_AD)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
 
     this.observer = new MutationObserver(() => {
-      const adVideoElms: HTMLMediaElement[] = (Array.from(document.querySelectorAll(this.selectorVideo)) as HTMLMediaElement[])
-      .filter(v => {
-        return (v.parentElement?.lastChild as HTMLElement).className !== this.selectorOverlay;
-      });
+      const adVideoElms: HTMLMediaElement[] = (Array.from(document.querySelectorAll(IMASdk.SELECTOR_VIDEO_AD)) as HTMLMediaElement[])
+        .filter(v => {
+          return (v.parentElement?.lastChild as HTMLElement).className !== this.selectorOverlay;
+        });
       if (adVideoElms.length === 0) return;
       if (skipMode === SkipMode.auto) {
         adVideoElms.forEach(videoElm => {
@@ -40,7 +49,7 @@ export class IMASdk extends Vod {
           return e.parentElement || e;
         }, document.querySelector('iframe[id^="goog_"]'));
         clickTarget.onclick = (e) => {
-            this.seekToEnd((Array.from(document.querySelectorAll(this.selectorVideo)) as HTMLMediaElement[]).find(v => !v.ended));
+          this.seekToEnd((Array.from(document.querySelectorAll(IMASdk.SELECTOR_VIDEO_AD)) as HTMLMediaElement[]).find(v => !v.ended));
         };
       }
     });

@@ -6,7 +6,7 @@ import { minimatch } from 'minimatch';
 
 (() => {
   const DEFAULT_SKIP_MODE: SkipMode = SkipMode.auto;
-  const DEFAULT_SKIP_RULE = { priority: 65535, pattern: 'https://*/**', skipMode: DEFAULT_SKIP_MODE };
+  const DEFAULT_SKIP_RULE = { priority: Number.MAX_SAFE_INTEGER, pattern: 'https://*/**', skipMode: DEFAULT_SKIP_MODE };
 
   const loadSkipMode = async (href: string): Promise<SkipMode> => {
     const skipRules = (await chrome.storage.local.get(['skipRules'])).skipRules;
@@ -22,7 +22,7 @@ import { minimatch } from 'minimatch';
   };
 
   window.addEventListener('load', async () => {
-    let vod:Vod = null;
+    let vod: Vod = null;
     chrome.storage.onChanged.addListener(async (_, area) => {
       if (area !== 'local') return;
 
@@ -34,21 +34,19 @@ import { minimatch } from 'minimatch';
     let observer: MutationObserver | null = null;
     const init = (href) => {
       switch (true) {
-        case /amazon\.(com|co\.jp)\//.test(href):
+        case AmazonPrimeVideo.isAvailable():
           console.debug('Amazon Prime Video detected');
           return new AmazonPrimeVideo();
-        case /youtube\.com/.test(href):
+        case YouTube.isAvailable():
           console.debug('YouTube detected');
           return new YouTube();
+        case IMASdk.isAvailable():
+          console.debug('IMA SDK detected');
+          return new IMASdk();
         default:
-          const imaSelector = 'script[src$="ima3.js"]';
-          if (document.querySelector(imaSelector)) {
-            console.debug('IMA SDK detected');
-            return new IMASdk();
-          }
           observer && observer.disconnect();
           observer = new MutationObserver(async () => {
-            if (!document.querySelector(imaSelector)) return;
+            if (!IMASdk.isAvailable()) return;
 
             observer.disconnect();
             console.debug('IMA SDK detected');
