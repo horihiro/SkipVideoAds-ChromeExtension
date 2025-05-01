@@ -2,31 +2,33 @@ import { SkipMode, Vod } from '../vod';
 
 export class AmazonPrimeVideo extends Vod {
   protected static SELECTOR_VIDEO: string = 'video[src^="blob:"]' as const;
+  protected static SELECTOR_COUNTDOWN: string = '.atvwebplayersdk-ad-timer-remaining-time' as const;
 
   static isAvailable(): boolean {
     return /amazon\.(com|co\.jp)\//.test(location.href);
   }
 
   seekToEnd(videoElm: HTMLMediaElement) {
-    const remainingTime = document.querySelector('.atvwebplayersdk-ad-timer-remaining-time');
-    const time = remainingTime.textContent;
+    const remainingTime = document.querySelector((this.constructor as any).SELECTOR_COUNTDOWN);
+    if (!remainingTime) return;
+    const time = remainingTime.textContent.replace(/.*(\d{1,2}:\d{2}).*/g, '$1');
     if (!time || time === '0:00') return;
     const minAndSec = time.split(':').map((t) => parseInt(t));
     this.skipVideo(videoElm, minAndSec[0] * 60 + minAndSec[1] - 0.5);
-}
+  }
 
   startWatching(skipMode: SkipMode = 'auto'): void {
     if (skipMode === SkipMode.none) return;
     // initialization
     this.observer && this.observer.disconnect();
     Array.from(document.querySelectorAll(this.selectorOverlay)).forEach(e => e.remove());
-    (Array.from(document.querySelectorAll(AmazonPrimeVideo.SELECTOR_VIDEO)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
+    (Array.from(document.querySelectorAll((this.constructor as any).SELECTOR_VIDEO)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
 
     this.observer = new MutationObserver(() => {
-      const videoElm: HTMLMediaElement = (Array.from(document.querySelectorAll(AmazonPrimeVideo.SELECTOR_VIDEO)) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
+      const videoElm: HTMLMediaElement = (Array.from(document.querySelectorAll((this.constructor as any).SELECTOR_VIDEO)) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
       if (!videoElm) return;
       const ontimeupdate = async (e) => {
-        const remainingTime = document.querySelector('.atvwebplayersdk-ad-timer-remaining-time');
+        const remainingTime = document.querySelector((this.constructor as any).SELECTOR_COUNTDOWN);
         const overlay = this.getOverlay(skipMode);
         if (!remainingTime || !remainingTime.checkVisibility() || videoElm.style.visibility === 'hidden') {
           overlay.parentElement && overlay.remove();

@@ -5,6 +5,11 @@ import { IMASdk } from './vods/ima_sdk';
 import { minimatch } from 'minimatch';
 
 (() => {
+  const VOD_CLASSES = [
+    AmazonPrimeVideo,
+    YouTube,
+    IMASdk,
+  ];
   const DEFAULT_SKIP_MODE: SkipMode = SkipMode.auto;
   const DEFAULT_SKIP_RULE = { priority: Number.MAX_SAFE_INTEGER, pattern: 'https://*/**', skipMode: DEFAULT_SKIP_MODE };
 
@@ -32,37 +37,37 @@ import { minimatch } from 'minimatch';
     });
 
     let observer: MutationObserver | null = null;
-    const init = (href) => {
-      switch (true) {
-        case AmazonPrimeVideo.isAvailable():
-          console.debug('Amazon Prime Video detected');
-          return new AmazonPrimeVideo();
-        case YouTube.isAvailable():
-          console.debug('YouTube detected');
-          return new YouTube();
-        case IMASdk.isAvailable():
-          console.debug('IMA SDK detected');
-          return new IMASdk();
-        default:
-          observer && observer.disconnect();
-          observer = new MutationObserver(async () => {
-            if (!IMASdk.isAvailable()) return;
-
-            observer.disconnect();
-            console.debug('IMA SDK detected');
-            vod = new IMASdk();
-            const skipMode = await loadSkipMode(location.href);
-            vod.startWatching(skipMode || DEFAULT_SKIP_MODE);
-          });
-          observer.observe(document.body, {
-            childList: true,
-            subtree: true,
-          });
-          console.debug('Observing for IMA SDK...');
-          return null;
+    const init = () => {
+      const vodClass = VOD_CLASSES.find((vodClass) => {
+        if (vodClass.isAvailable()) {
+          console.debug(`${vodClass.name} detected`);
+          vod = new vodClass();
+          return true;
+        }
+        return false;
+      });
+      if (vodClass) {
+        vod = new vodClass();
+        return vod;
       }
+      observer && observer.disconnect();
+      observer = new MutationObserver(async () => {
+        if (!IMASdk.isAvailable()) return;
+
+        observer.disconnect();
+        console.debug('IMA SDK detected');
+        vod = new IMASdk();
+        const skipMode = await loadSkipMode(location.href);
+        vod.startWatching(skipMode || DEFAULT_SKIP_MODE);
+      });
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+      console.debug('Observing for IMA SDK...');
+      return null;
     };
-    vod = init(location.href);
+    vod = init();
     if (!vod) return;
 
     const skipMode = await loadSkipMode(location.href);
