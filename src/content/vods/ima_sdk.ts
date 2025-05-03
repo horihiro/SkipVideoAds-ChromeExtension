@@ -1,3 +1,11 @@
+// Supported Video Platforms:
+// - https://www.dailymotion.com/
+// - https://tver.jp/
+// - https://abema.tv/
+// - https://cu.ntv.co.jp/
+// - https://cu.tbs.co.jp/
+// - https://fod.fujitv.co.jp/
+
 import { SkipMode, Vod } from "../vod";
 export class IMASdk extends Vod {
   protected static SELECTOR_VIDEO_VJS: string = 'video#vjs_video_3_html5_api' as const;
