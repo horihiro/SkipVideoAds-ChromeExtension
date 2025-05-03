@@ -12,12 +12,13 @@ import { minimatch } from 'minimatch';
   ];
   const DEFAULT_SKIP_MODE: SkipMode = SkipMode.auto;
   const DEFAULT_SKIP_RULE = { priority: Number.MAX_SAFE_INTEGER, pattern: 'https://*/**', skipMode: DEFAULT_SKIP_MODE };
+  const TIMEOUT_OBSERVE_IMASDK = 10000;
 
   const loadSkipMode = async (href: string): Promise<SkipMode> => {
     const skipRules = (await chrome.storage.local.get(['skipRules'])).skipRules;
     if (!skipRules || skipRules.length === 0) {
       await chrome.storage.local.set({ 'skipRules': [DEFAULT_SKIP_RULE] });
-      return DEFAULT_SKIP_MODE;
+      return DEFAULT_SKIP_RULE.skipMode;
     }
     const skipMode = skipRules.sort((r1, r2) => r1.priority > r2.priority ? 1 : -1).reduce((prev, skipRule) => {
       return prev || (minimatch(href, skipRule.pattern) ? skipRule.skipMode : null);
@@ -32,12 +33,12 @@ import { minimatch } from 'minimatch';
       if (area !== 'local') return;
 
       const skipMode = await loadSkipMode(location.href);
-      if (skipMode === SkipMode.none) return;
+      if (skipMode === SkipMode.none || !vod) return;
       vod.startWatching(skipMode || DEFAULT_SKIP_MODE);
     });
 
     let observer: MutationObserver | null = null;
-    const init = () => {
+    const init = async () => {
       const vodClass = VOD_CLASSES.find((vodClass) => {
         if (vodClass.isAvailable()) {
           console.debug(`${vodClass.name} detected`);
@@ -65,9 +66,22 @@ import { minimatch } from 'minimatch';
         subtree: true,
       });
       console.debug('Observing for IMA SDK...');
+      setTimeout(() => {
+        if (!observer) return;
+
+        observer.disconnect();
+        console.debug('Stopped observing for IMA SDK');
+      }, await (async () => {
+        const { timeout } = await chrome.storage.local.get(['timeout']);
+        if (timeout && !isNaN(timeout)) return timeout;
+
+        await chrome.storage.local.set({ 'timeout': TIMEOUT_OBSERVE_IMASDK });
+        return TIMEOUT_OBSERVE_IMASDK;
+      })()
+      );
       return null;
     };
-    vod = init();
+    vod = await init();
     if (!vod) return;
 
     const skipMode = await loadSkipMode(location.href);
