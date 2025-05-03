@@ -61,7 +61,7 @@ ${skipMode === SkipMode.auto ? `<path transform="matrix(0 0.016 -0.016 0 46 17)"
       dur="1.5s"
       repeatCount="indefinite" />
   </rect>
-`: '')}</svg>`
+`: '')}</svg>`;
     return this.overlayElm;
   }
   static isAvaulable(): boolean {
