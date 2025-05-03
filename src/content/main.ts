@@ -56,6 +56,7 @@ import { minimatch } from 'minimatch';
         if (!IMASdk.isAvailable()) return;
 
         observer.disconnect();
+        observer = null;
         console.debug('IMA SDK detected');
         vod = new IMASdk();
         const skipMode = await loadSkipMode(location.href);

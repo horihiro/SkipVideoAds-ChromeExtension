@@ -8,14 +8,14 @@
 
 import { SkipMode, Vod } from "../vod";
 export class IMASdk extends Vod {
-  protected static SELECTOR_VIDEO_VJS: string = 'video#vjs_video_3_html5_api' as const;
+  protected static SELECTOR_VIDEO_VJS: string = 'video[id^="vjs_video_"][id$="_html5_api"]' as const;
   protected static SELECTOR_VIDEO_AD: string = 'video[title="Advertisement"], video[src^="https://"]' as const;
   protected static SELECTOR_IMA_SDK: string = 'script[src$="ima3.js"]' as const;
 
   static isAvailable(): boolean {
-    return !!document.querySelector((this.constructor as any).SELECTOR_IMA_SDK)
-        || !!document.querySelector((this.constructor as any).SELECTOR_VIDEO_AD)
-        || !!document.querySelector((this.constructor as any).SELECTOR_VIDEO_VJS);
+    return !!document.querySelector(IMASdk.SELECTOR_IMA_SDK)
+        || !!document.querySelector(IMASdk.SELECTOR_VIDEO_AD)
+        || !!document.querySelector(IMASdk.SELECTOR_VIDEO_VJS);
   }
 
   seekToEnd(videoElm: HTMLMediaElement) {
@@ -32,10 +32,10 @@ export class IMASdk extends Vod {
     // initialization
     this.observer && this.observer.disconnect();
     Array.from(document.querySelectorAll(this.selectorOverlay)).forEach(e => e.remove());
-    (Array.from(document.querySelectorAll((this.constructor as any).SELECTOR_VIDEO_AD)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
+    (Array.from(document.querySelectorAll(IMASdk.SELECTOR_VIDEO_AD)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
 
     this.observer = new MutationObserver(() => {
-      const adVideoElms: HTMLMediaElement[] = (Array.from(document.querySelectorAll((this.constructor as any).SELECTOR_VIDEO_AD)) as HTMLMediaElement[])
+      const adVideoElms: HTMLMediaElement[] = (Array.from(document.querySelectorAll(IMASdk.SELECTOR_VIDEO_AD)) as HTMLMediaElement[])
         .filter(v => {
           return (v.parentElement?.lastChild as HTMLElement).className !== this.selectorOverlay;
         });
@@ -57,7 +57,7 @@ export class IMASdk extends Vod {
           return e.parentElement || e;
         }, document.querySelector('iframe[id^="goog_"]'));
         clickTarget.onclick = (e) => {
-          this.seekToEnd((Array.from(document.querySelectorAll((this.constructor as any).SELECTOR_VIDEO_AD)) as HTMLMediaElement[]).find(v => !v.ended));
+          this.seekToEnd((Array.from(document.querySelectorAll(IMASdk.SELECTOR_VIDEO_AD)) as HTMLMediaElement[]).find(v => !v.ended));
         };
       }
     });

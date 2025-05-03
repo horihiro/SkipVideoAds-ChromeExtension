@@ -9,7 +9,7 @@ export class AmazonPrimeVideo extends Vod {
   }
 
   seekToEnd(videoElm: HTMLMediaElement) {
-    const remainingTime = document.querySelector((this.constructor as any).SELECTOR_COUNTDOWN);
+    const remainingTime = document.querySelector(AmazonPrimeVideo.SELECTOR_COUNTDOWN);
     if (!remainingTime) return;
     const time = remainingTime.textContent.replace(/.*(\d{1,2}:\d{2}).*/g, '$1');
     if (!time || time === '0:00') return;
@@ -22,20 +22,21 @@ export class AmazonPrimeVideo extends Vod {
     // initialization
     this.observer && this.observer.disconnect();
     Array.from(document.querySelectorAll(this.selectorOverlay)).forEach(e => e.remove());
-    (Array.from(document.querySelectorAll((this.constructor as any).SELECTOR_VIDEO)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
+    (Array.from(document.querySelectorAll(AmazonPrimeVideo.SELECTOR_VIDEO)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
 
     this.observer = new MutationObserver(() => {
-      const videoElm: HTMLMediaElement = (Array.from(document.querySelectorAll((this.constructor as any).SELECTOR_VIDEO)) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
+      const videoElm: HTMLMediaElement = (Array.from(document.querySelectorAll(AmazonPrimeVideo.SELECTOR_VIDEO)) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
       if (!videoElm) return;
       const ontimeupdate = async (e) => {
-        const remainingTime = document.querySelector((this.constructor as any).SELECTOR_COUNTDOWN);
+        const remainingTime = document.querySelector(AmazonPrimeVideo.SELECTOR_COUNTDOWN);
         const overlay = this.getOverlay(skipMode);
         if (!remainingTime || !remainingTime.checkVisibility() || videoElm.style.visibility === 'hidden') {
           overlay.parentElement && overlay.remove();
           return;
         }
 
-        !overlay.parentElement && videoElm.closest('.webPlayerSDKContainer').appendChild(overlay);
+        !overlay.parentElement && videoElm.closest('.webPlayerSDKContainer, #dv-web-player-2>*').appendChild(overlay);
+        // !overlay.parentElement && videoElm.closest('.webPlayerSDKContainer').appendChild(overlay);
 
         if (skipMode === SkipMode.auto) {
           this.seekToEnd(videoElm);

@@ -17,10 +17,10 @@ export class YouTube extends Vod {
     // initialization
     this.observer && this.observer.disconnect();
     Array.from(document.querySelectorAll(this.selectorOverlay)).forEach(e => e.remove());
-    (Array.from(document.querySelectorAll((this.constructor as any).SELECTOR_VIDEO)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
+    (Array.from(document.querySelectorAll(YouTube.SELECTOR_VIDEO)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
 
     this.observer = new MutationObserver(() => {
-      const videoElm: HTMLMediaElement = (Array.from(document.querySelectorAll((this.constructor as any).SELECTOR_VIDEO)) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
+      const videoElm: HTMLMediaElement = (Array.from(document.querySelectorAll(YouTube.SELECTOR_VIDEO)) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
       if (!videoElm) return;
       const ontimeupdate = async (e) => {
         const overlay = this.getOverlay(skipMode);
