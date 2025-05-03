@@ -30,13 +30,13 @@ export class AmazonPrimeVideo extends Vod {
       const ontimeupdate = async (e) => {
         const remainingTime = document.querySelector(AmazonPrimeVideo.SELECTOR_COUNTDOWN);
         const overlay = this.getOverlay(skipMode);
-        if (!remainingTime || !remainingTime.checkVisibility() || videoElm.style.visibility === 'hidden') {
+        if (!remainingTime || !remainingTime.checkVisibility() || videoElm.style.visibility === 'hidden'
+          || isNaN(videoElm.duration) || isNaN(videoElm.currentTime) || videoElm.currentTime <= 0 || videoElm.duration <= 0) {
           overlay.parentElement && overlay.remove();
           return;
         }
 
-        !overlay.parentElement && videoElm.closest('.webPlayerSDKContainer, #dv-web-player-2>*').appendChild(overlay);
-        // !overlay.parentElement && videoElm.closest('.webPlayerSDKContainer').appendChild(overlay);
+        !overlay.parentElement && videoElm.closest('.webPlayerSDKContainer, [id^="dv-web-player"]>*')?.appendChild(overlay);
 
         if (skipMode === SkipMode.auto) {
           this.seekToEnd(videoElm);
