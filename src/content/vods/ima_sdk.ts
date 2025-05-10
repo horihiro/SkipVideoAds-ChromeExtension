@@ -9,7 +9,7 @@
 import { SkipMode, Vod } from "../vod";
 export class IMASdk extends Vod {
   protected static SELECTOR_VIDEO_VJS: string = 'video[id^="vjs_video_"][id$="_html5_api"]' as const;
-  protected static SELECTOR_VIDEO_AD: string = 'video[title="Advertisement"], video[src^="https://"]' as const;
+  protected static SELECTOR_VIDEO_AD: string = 'video[title="Advertisement"], video#adPlayer' as const; // `video#adPlayer` is a video ad element on TBS FREE
   protected static SELECTOR_IMA_SDK: string = 'script[src$="ima3.js"]' as const;
 
   static isAvailable(): boolean {
