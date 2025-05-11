@@ -16,6 +16,18 @@
   },
   "content_scripts": [
     {
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true,
+      "matches": [
+        "https://*/*"
+      ],
+      "js": [
+        "dist/contentScript/injection.js"
+      ]
+    },
+    {
+      "run_at": "document_end",
       "all_frames": true,
       "matches": [
         "https://*/*"

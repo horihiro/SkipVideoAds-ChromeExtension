@@ -6,6 +6,42 @@ export class YouTube extends Vod {
     return /youtube\.com/.test(location.href);
   }
 
+  static injection(): boolean {
+    const deepCopy = (src) => {
+      let target = src;
+      let dst = {};
+      while (true) {
+        try {
+          dst = Object.assign(dst, Object.getOwnPropertyNames(target)
+            .reduce((p, k) => {
+              try {
+                if (typeof p[k] !== 'function' && !p[k]) p[k] = src[k];
+              } catch { }
+              return p;
+            }, dst));
+          target = target.__proto__;
+        } catch (e) {
+          break;
+        }
+      }
+      return dst;
+    }
+    Element.prototype["_addEventListener"] = Element.prototype.addEventListener;
+    Element.prototype.addEventListener = function () {
+      let args = [...arguments]
+      let temp = args[1];
+      args[1] = function () {
+        let args2 = [...arguments];
+        args2[0] = deepCopy(args2[0])
+        args2[0].isTrusted = true;
+        args2[0].preventDefault = () => { return true; };
+        return temp(...args2);
+      }
+      return this._addEventListener(...args);
+    }
+    return true;
+  }
+
   seekToEnd(videoElm: HTMLMediaElement) {
     const skipTime = videoElm.duration - videoElm.currentTime;
     if (skipTime <= 0) return;

@@ -17,6 +17,9 @@ export class IMASdk extends Vod {
         || !!document.querySelector(IMASdk.SELECTOR_VIDEO_AD)
         || !!document.querySelector(IMASdk.SELECTOR_VIDEO_VJS);
   }
+  static injection(): boolean {
+    return true;
+  }
 
   seekToEnd(videoElm: HTMLMediaElement) {
     if (!videoElm) return;

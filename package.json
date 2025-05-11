@@ -2,10 +2,12 @@
   "scripts": {
     "clean": "node -e \"require('fs-extra').removeSync('./dist')\"",
     "build:mkdir": "node -e \"const fs = require('fs-extra'); fs.ensureDirSync('./dist/contentScript');\"",
-    "build": "npm run clean && npm run build:mkdir && npm run build:content",
-    "build:dev": "npm run clean && npm run build:mkdir && npm run build:dev:content",
+    "build": "npm run clean && npm run build:mkdir && npm run build:content && npm run build:injection",
+    "build:dev": "npm run clean && npm run build:mkdir && npm run build:dev:content && npm run build:injection",
     "build:content": "esbuild ./src/content/main.ts --bundle --minify --outfile=./dist/contentScript/main.js ",
     "build:dev:content": "esbuild ./src/content/main.ts --bundle --sourcemap=inline --outfile=./dist/contentScript/main.js ",
+    "build:injection": "esbuild ./src/content/injection.ts --bundle --minify --outfile=./dist/contentScript/injection.js ",
+    "build:dev:injection": "esbuild ./src/content/injection.ts --bundle --sourcemap=inline --outfile=./dist/contentScript/injection.js ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {

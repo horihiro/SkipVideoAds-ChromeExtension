@@ -8,6 +8,10 @@ export class AmazonPrimeVideo extends Vod {
     return /amazon\.(com|co\.jp)\//.test(location.href);
   }
 
+  static injection(): boolean {
+    return true;
+  }
+
   seekToEnd(videoElm: HTMLMediaElement) {
     const remainingTime = document.querySelector(AmazonPrimeVideo.SELECTOR_COUNTDOWN);
     if (!remainingTime) return;
