@@ -42,7 +42,6 @@ import { minimatch } from 'minimatch';
       const vodClass = VOD_CLASSES.find((vodClass) => {
         if (vodClass.isAvailable()) {
           console.debug(`${vodClass.name} detected`);
-          vod = new vodClass();
           return true;
         }
         return false;
