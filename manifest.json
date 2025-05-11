@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "Skip Video Ads",
   "short_name": "Skip Video Ads",
-  "version": "0.0.2",
-  "version_name": "0.0.2-botan",
+  "version": "0.1.0",
+  "version_name": "0.1.0-chitosezakura",
   "description": "A Chrome extension that skips video ads on Video platforms.",
   "permissions": [
     "storage"
