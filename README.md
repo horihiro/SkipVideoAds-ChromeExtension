@@ -76,6 +76,8 @@ This extension can be installed from [Chrome Web Store](https://chromewebstore.g
 
 ## Change logs
 
+### [0.1.0](https://github.com/horihiro/SkipVideoAds-ChromeExtension/releases/tag/0.1.0)
+
 ### [0.0.2](https://github.com/horihiro/SkipVideoAds-ChromeExtension/releases/tag/0.0.2)
 Bug Fix(es)
   - Any `video` tags which has `src="https://..."` are recognized as video advertisements ([#1](https://github.com/horihiro/SkipVideoAds-ChromeExtension/issues/1))
