@@ -7,6 +7,7 @@ export class YouTube extends Vod {
   }
 
   static injection(): boolean {
+    // To set IsTrusted to true
     const deepCopy = (src) => {
       let target = src;
       let dst = {};
@@ -15,7 +16,13 @@ export class YouTube extends Vod {
           dst = Object.assign(dst, Object.getOwnPropertyNames(target)
             .reduce((p, k) => {
               try {
-                if (typeof p[k] !== 'function' && !p[k]) p[k] = src[k];
+                p[k] = (typeof src[k] !== 'function') ? src[k] : function (...args) {
+                  const result = src[k].apply(src, args);
+                  if (result && typeof result === 'object') {
+                    return deepCopy(result);
+                  }
+                  return result;
+                }
               } catch { }
               return p;
             }, dst));
@@ -28,13 +35,14 @@ export class YouTube extends Vod {
     }
     Element.prototype["_addEventListener"] = Element.prototype.addEventListener;
     Element.prototype.addEventListener = function () {
-      let args = [...arguments]
-      let temp = args[1];
+      const args = [...arguments];
+      const temp = args[1];
       args[1] = function () {
-        let args2 = [...arguments];
-        args2[0] = deepCopy(args2[0])
-        args2[0].isTrusted = true;
-        args2[0].preventDefault = () => { return true; };
+        const args2 = [...arguments];
+        const clone = deepCopy(args2[0])
+        clone['isTrusted'] = true;
+        clone['preventDefault'] = function () {}; 
+        args2[0] = clone
         return temp(...args2);
       }
       return this._addEventListener(...args);
@@ -64,8 +72,13 @@ export class YouTube extends Vod {
           overlay.parentElement && overlay.remove();
           return;
         }
+        const skipButton = document.querySelector('.ytp-skip-ad-button__text') as HTMLElement
+        if (skipButton) {
+          console.debug('Skip button found');
+          skipButton.click();
+        }
         const video = (e.target as HTMLMediaElement);
-        if (isNaN(video.duration) || isNaN(video.currentTime) || video.currentTime <= 0 || video.duration <= 0) return;
+        if (isNaN(video.duration) || isNaN(video.currentTime) || video.currentTime <= 0 || video.duration <= 0) {return};
 
         overlay.style.height = videoElm.style.height;
         videoElm.parentElement?.appendChild(overlay);

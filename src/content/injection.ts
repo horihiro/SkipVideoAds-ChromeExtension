@@ -1,12 +1,12 @@
-import { AmazonPrimeVideo } from './vods/amazon_prime_video';
+// import { AmazonPrimeVideo } from './vods/amazon_prime_video';
 import { YouTube } from './vods/youtube';
-import { IMASdk } from './vods/ima_sdk';
+// import { IMASdk } from './vods/ima_sdk';
 
 (() => {
   const VOD_CLASSES = [
-    AmazonPrimeVideo,
+    // AmazonPrimeVideo,
     YouTube,
-    IMASdk,
+    // IMASdk,
   ];
   const init = () => {
     const vodClass = VOD_CLASSES.find((vodClass) => {
