@@ -1,3 +1,4 @@
+import { sleepAsync } from '../../utils/timer';
 import { SkipMode, Vod } from '../vod';
 
 export class AmazonPrimeVideo extends Vod {
@@ -14,6 +15,7 @@ export class AmazonPrimeVideo extends Vod {
     const time = remainingTime.textContent.replace(/.*(\d{1,2}:\d{2}).*/g, '$1');
     if (!time || time === '0:00') return;
     const minAndSec = time.split(':').map((t) => parseInt(t));
+    if (minAndSec.length !== 2 || minAndSec.some(isNaN) || minAndSec[0] * 60 + minAndSec[1] < 1 + this.TIMEGAP) return;
     this.skipVideo(videoElm, minAndSec[0] * 60 + minAndSec[1] - 0.5);
   }
 
@@ -39,6 +41,7 @@ export class AmazonPrimeVideo extends Vod {
         !overlay.parentElement && videoElm.closest('.webPlayerSDKContainer, [id^="dv-web-player"]>*')?.appendChild(overlay);
 
         if (skipMode === SkipMode.auto) {
+          await sleepAsync(100);
           this.seekToEnd(videoElm);
         } else if (skipMode === SkipMode.manual) {
           const clickTarget = overlay;
