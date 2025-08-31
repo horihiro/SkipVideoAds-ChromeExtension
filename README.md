@@ -77,8 +77,8 @@ This extension can be installed from [Chrome Web Store](https://chromewebstore.g
 ## Change logs
 
 ### [0.1.0](https://github.com/horihiro/SkipVideoAds-ChromeExtension/releases/tag/0.1.0)
-  - New feature(s)
   - Improve feature(s)
+    - Handling a next button on YouTube
   - Bug Fix(es)
     - Fix an infinite loop on Amazon Prime Video
 
