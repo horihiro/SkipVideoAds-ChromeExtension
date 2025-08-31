@@ -6,6 +6,50 @@ export class YouTube extends Vod {
     return /youtube\.com/.test(location.href);
   }
 
+  static injection(): boolean {
+    // To set IsTrusted to true
+    const deepCopy = (src) => {
+      let target = src;
+      let dst = {};
+      while (true) {
+        try {
+          dst = Object.assign(dst, Object.getOwnPropertyNames(target)
+            .reduce((p, k) => {
+              try {
+                p[k] = (typeof src[k] !== 'function') ? src[k] : function (...args) {
+                  const result = src[k].apply(src, args);
+                  if (result && typeof result === 'object') {
+                    return deepCopy(result);
+                  }
+                  return result;
+                }
+              } catch { }
+              return p;
+            }, dst));
+          target = target.__proto__;
+        } catch (e) {
+          break;
+        }
+      }
+      return dst;
+    }
+    Element.prototype["_addEventListener"] = Element.prototype.addEventListener;
+    Element.prototype.addEventListener = function () {
+      const args = [...arguments];
+      const temp = args[1];
+      args[1] = function () {
+        const args2 = [...arguments];
+        const clone = deepCopy(args2[0])
+        clone['isTrusted'] = true;
+        clone['preventDefault'] = function () {}; 
+        args2[0] = clone
+        return temp(...args2);
+      }
+      return this._addEventListener(...args);
+    }
+    return true;
+  }
+
   seekToEnd(videoElm: HTMLMediaElement) {
     const skipTime = videoElm.duration - videoElm.currentTime;
     if (skipTime <= 0) return;
@@ -28,8 +72,13 @@ export class YouTube extends Vod {
           overlay.parentElement && overlay.remove();
           return;
         }
+        const skipButton = document.querySelector('.ytp-skip-ad-button__text') as HTMLElement
+        if (skipButton) {
+          console.debug('Skip button found');
+          skipButton.click();
+        }
         const video = (e.target as HTMLMediaElement);
-        if (isNaN(video.duration) || isNaN(video.currentTime) || video.currentTime <= 0 || video.duration <= 0) return;
+        if (isNaN(video.duration) || isNaN(video.currentTime) || video.currentTime <= 0 || video.duration <= 0) {return};
 
         overlay.style.height = videoElm.style.height;
         videoElm.parentElement?.appendChild(overlay);

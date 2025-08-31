@@ -68,6 +68,10 @@ ${skipMode === SkipMode.auto ? `<path transform="matrix(0 0.016 -0.016 0 46 17)"
     console.error('Need to implement startWatching');
     throw new Error('Not implemented');
   }
+  static injection() {
+    console.error('Need to implement startWatching');
+    throw new Error('Not implemented');
+  }
   startWatching(skipMode: SkipMode = SkipMode.auto) {
     console.error('Need to implement startWatching');
     throw new Error('Not implemented');
