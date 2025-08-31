@@ -80,6 +80,7 @@ This extension can be installed from [Chrome Web Store](https://chromewebstore.g
   - New feature(s)
   - Improve feature(s)
   - Bug Fix(es)
+    - Fix an infinite loop on Amazon Prime Video
 
 ### [0.0.2](https://github.com/horihiro/SkipVideoAds-ChromeExtension/releases/tag/0.0.2)
   - Bug Fix(es)
