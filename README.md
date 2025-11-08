@@ -76,6 +76,10 @@ This extension can be installed from [Chrome Web Store](https://chromewebstore.g
 
 ## Change logs
 
+### [0.2.0](https://github.com/horihiro/SkipVideoAds-ChromeExtension/releases/tag/0.2.0)
+  - Bug Fix(es)
+    - Fix performance issue on YouTube
+
 ### [0.1.0](https://github.com/horihiro/SkipVideoAds-ChromeExtension/releases/tag/0.1.0)
   - Improve feature(s)
     - Handling a next button on YouTube
