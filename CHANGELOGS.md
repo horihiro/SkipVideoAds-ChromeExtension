@@ -1,4 +1,9 @@
 ## Change logs
+### [0.2.2](https://github.com/horihiro/SkipVideoAds-ChromeExtension/releases/tag/0.2.2)
+  - Bug Fix(es)
+    - Improve event listener handling for non-click events
+    - Adjust skip timing and add debug logging for remaining time
+
 
 ### [0.2.1](https://github.com/horihiro/SkipVideoAds-ChromeExtension/releases/tag/0.2.1)
   - Bug Fix(es)
