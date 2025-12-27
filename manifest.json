@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "Skip Video Ads",
   "short_name": "Skip Video Ads",
-  "version": "0.2.1",
-  "version_name": "0.2.1-ebine",
+  "version": "0.2.2",
+  "version_name": "0.2.2-fukujuso",
   "description": "A Chrome extension that skips video ads on Video platforms.",
   "permissions": [
     "storage"
