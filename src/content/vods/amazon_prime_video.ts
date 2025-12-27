@@ -20,7 +20,7 @@ export class AmazonPrimeVideo extends Vod {
     if (!time || time === '0:00') return;
     const minAndSec = time.split(':').map((t) => parseInt(t));
     if (minAndSec.length !== 2 || minAndSec.some(isNaN) || minAndSec[0] * 60 + minAndSec[1] < 1 + this.TIMEGAP) return;
-    this.skipVideo(videoElm, minAndSec[0] * 60 + minAndSec[1] - 0.5);
+    this.skipVideo(videoElm, minAndSec[0] * 60 + minAndSec[1] - 1);
   }
 
   startWatching(skipMode: SkipMode = 'auto'): void {

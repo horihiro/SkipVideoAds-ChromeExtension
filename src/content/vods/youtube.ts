@@ -35,7 +35,7 @@ export class YouTube extends Vod {
     }
     Element.prototype["_addEventListener"] = Element.prototype.addEventListener;
     Element.prototype.addEventListener = function () {
-      if (arguments[0] && arguments[0].toString() !== 'click') return this._addEventListener(...arguments);
+      if (!arguments || !arguments[0] || arguments[0].toString() !== 'click') return this._addEventListener(...arguments);
 
       const args = [...arguments];
       const temp = args[1];
