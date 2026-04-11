@@ -50,7 +50,7 @@ type SkipRule = {
     const init = async () => {
       const vodClass = VOD_CLASSES.find((vodClass) => {
         if (vodClass.isAvailable()) {
-          console.debug(`${vodClass.name} detected`);
+          console.debug(`${vodClass.getVODName()} detected`);
           return true;
         }
         return false;
@@ -65,7 +65,7 @@ type SkipRule = {
 
         observer && observer.disconnect();
         observer = null;
-        console.debug('IMA SDK detected');
+        console.debug(`${IMASdk.getVODName()} detected`);
         vod = new IMASdk();
         const skipMode = await loadSkipMode(location.href);
         vod.startWatching(skipMode || DEFAULT_SKIP_MODE);
@@ -74,12 +74,12 @@ type SkipRule = {
         childList: true,
         subtree: true,
       });
-      console.debug('Observing for IMA SDK...');
+      console.debug(`Observing for ${IMASdk.getVODName()}...`);
       setTimeout(() => {
         if (!observer) return;
 
         observer && observer.disconnect();
-        console.debug('Stopped observing for IMA SDK');
+        console.debug(`Stopped observing for ${IMASdk.getVODName()}`);
       }, await (async () => {
         const { timeout } = await chrome.storage.local.get(['timeout']);
         if (timeout && !isNaN(timeout)) return timeout;

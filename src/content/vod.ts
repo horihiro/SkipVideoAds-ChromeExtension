@@ -9,7 +9,7 @@ export type SkipMode = typeof SkipMode[keyof typeof SkipMode];
 export class Vod {
   protected TIMEGAP: number;
   private overlayElm: HTMLDivElement;
-  protected observer: MutationObserver;
+  protected observer: MutationObserver | null;
   protected selectorOverlay: string = 'skip-vod-overlay' as const;
   constructor() {
     this.observer = null;
@@ -64,12 +64,16 @@ ${skipMode === SkipMode.auto ? `<path transform="matrix(0 0.016 -0.016 0 46 17)"
 `: '')}</svg>`;
     return this.overlayElm;
   }
-  static isAvaulable(): boolean {
-    console.error('Need to implement startWatching');
+  static isAvailable(): boolean {
+    console.error('Need to implement isAvailable');
     throw new Error('Not implemented');
   }
   static injection() {
-    console.error('Need to implement startWatching');
+    console.error('Need to implement injection');
+    throw new Error('Not implemented');
+  }
+  static getVODName(): string {
+    console.error('Need to implement getVODName');
     throw new Error('Not implemented');
   }
   startWatching(skipMode: SkipMode = SkipMode.auto) {

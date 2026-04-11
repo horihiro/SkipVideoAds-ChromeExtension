@@ -52,6 +52,10 @@ export class YouTube extends Vod {
     return true;
   }
 
+  static getVODName(): string {
+    return 'YouTube';
+  }
+
   seekToEnd(videoElm: HTMLMediaElement) {
     const skipTime = videoElm.duration - videoElm.currentTime;
     if (skipTime <= 0) return;

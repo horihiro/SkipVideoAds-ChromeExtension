@@ -14,7 +14,7 @@ import { Netflix } from './vods/netflix';
     const vodClass = VOD_CLASSES.find((vodClass) => {
       if (!vodClass.isAvailable()) return false;
 
-      console.debug(`${vodClass.name} detected`);
+      console.debug(`${vodClass.getVODName()} detected`);
       return true;
     });
     vodClass && vodClass.injection();

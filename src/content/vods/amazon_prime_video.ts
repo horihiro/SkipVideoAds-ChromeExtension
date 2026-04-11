@@ -13,6 +13,10 @@ export class AmazonPrimeVideo extends Vod {
     return true;
   }
 
+  static getVODName(): string {
+    return 'Amazon Prime Video';
+  }
+
   seekToEnd(videoElm: HTMLMediaElement) {
     const remainingTime = document.querySelector(AmazonPrimeVideo.SELECTOR_COUNTDOWN);
     if (!remainingTime) return;

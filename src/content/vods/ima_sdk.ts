@@ -20,6 +20,9 @@ export class IMASdk extends Vod {
   static injection(): boolean {
     return true;
   }
+  static getVODName(): string {
+    return 'IMA SDK';
+  }
 
   seekToEnd(videoElm: HTMLMediaElement) {
     if (!videoElm) return;
