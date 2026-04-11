@@ -4,5 +4,6 @@
     "target": "ES2018",
     "lib": ["es2018", "dom"],
     "moduleResolution": "node",
+    "ignoreDeprecations": "6.0",
   }
 }

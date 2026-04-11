@@ -31,9 +31,9 @@ export class AmazonPrimeVideo extends Vod {
     (Array.from(document.querySelectorAll(AmazonPrimeVideo.SELECTOR_VIDEO)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
 
     this.observer = new MutationObserver(() => {
-      const videoElm: HTMLMediaElement = (Array.from(document.querySelectorAll(AmazonPrimeVideo.SELECTOR_VIDEO)) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
+      const videoElm: HTMLMediaElement | undefined = (Array.from(document.querySelectorAll(AmazonPrimeVideo.SELECTOR_VIDEO)) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
       if (!videoElm) return;
-      const ontimeupdate = async (e) => {
+      const ontimeupdate = async () => {
         const remainingTime = document.querySelector(AmazonPrimeVideo.SELECTOR_COUNTDOWN);
         const overlay = this.getOverlay(skipMode);
         if (!remainingTime || !remainingTime.checkVisibility() || videoElm.style.visibility === 'hidden'
