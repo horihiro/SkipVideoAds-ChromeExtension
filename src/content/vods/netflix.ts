@@ -7,6 +7,9 @@ export class Netflix extends Vod {
   protected static PLAYBACK_RATE_SKIP: number = 8 as const;
 
   private originalAudioState = new WeakMap<HTMLMediaElement, { volume: number; muted: boolean }>();
+  private originalPlaybackRate = new WeakMap<HTMLMediaElement, number>();
+  private hookedVideos = new WeakSet<HTMLMediaElement>();
+  private keepSkipTimerByVideo = new Map<HTMLMediaElement, number>();
 
   static isAvailable(): boolean {
     return /netflix\.com\//.test(location.href);
@@ -38,6 +41,9 @@ export class Netflix extends Vod {
     }
 
     return true;
+  }
+  static getVODName(): string {
+    return 'Netflix';
   }
 
   private isAdPlaying(): boolean {
@@ -76,6 +82,67 @@ export class Netflix extends Vod {
     this.originalAudioState.delete(videoElm);
   }
 
+  private startKeepSkip(videoElm: HTMLMediaElement, skipMode: SkipMode): void {
+    if (this.keepSkipTimerByVideo.has(videoElm)) return;
+
+    this.originalPlaybackRate.set(videoElm, videoElm.playbackRate);
+
+    const timerId = window.setInterval(() => {
+      if (skipMode === SkipMode.none || !this.isAdPlaying()) return;
+
+      if (videoElm.playbackRate !== Netflix.PLAYBACK_RATE_SKIP) {
+        videoElm.playbackRate = Netflix.PLAYBACK_RATE_SKIP;
+      }
+      this.muteWhileSkipping(videoElm);
+    }, 100);
+    this.keepSkipTimerByVideo.set(videoElm, timerId);
+  }
+
+  private stopKeepSkip(videoElm: HTMLMediaElement): void {
+    const timerId = this.keepSkipTimerByVideo.get(videoElm);
+    if (timerId) {
+      clearInterval(timerId);
+      this.keepSkipTimerByVideo.delete(videoElm);
+    }
+
+    const originalPlaybackRate = this.originalPlaybackRate.get(videoElm);
+    if (typeof originalPlaybackRate === 'number' && videoElm.playbackRate !== originalPlaybackRate) {
+      videoElm.playbackRate = originalPlaybackRate;
+    }
+    this.originalPlaybackRate.delete(videoElm);
+  }
+
+  private hookVideo(videoElm: HTMLMediaElement, skipMode: SkipMode): void {
+    if (this.hookedVideos.has(videoElm)) return;
+    this.hookedVideos.add(videoElm);
+
+    videoElm.addEventListener('timeupdate', () => {
+      const overlay = this.getOverlay(skipMode);
+      const adPlaying = this.isAdPlaying();
+
+      if (!adPlaying) {
+        overlay.parentElement && overlay.remove();
+        this.stopKeepSkip(videoElm);
+        this.restoreAudio(videoElm);
+        return;
+      }
+
+      overlay.style.height = `${videoElm.clientHeight || 0}px`;
+      !overlay.parentElement && videoElm.parentElement?.appendChild(overlay);
+
+      if (skipMode === SkipMode.auto) {
+        this.startKeepSkip(videoElm, skipMode);
+      } else if (skipMode === SkipMode.manual) {
+        if (!overlay.onclick) {
+          overlay.onclick = () => {
+            this.startKeepSkip(videoElm, SkipMode.auto);
+            overlay.onclick = null;
+          };
+        }
+      }
+    });
+  }
+
   startWatching(skipMode: SkipMode = SkipMode.auto): void {
     if (skipMode === SkipMode.none) return;
 
@@ -83,45 +150,14 @@ export class Netflix extends Vod {
     this.observer && this.observer.disconnect();
     Array.from(document.querySelectorAll(`.${this.selectorOverlay}`)).forEach((e) => e.remove());
     (Array.from(document.querySelectorAll(Netflix.SELECTOR_VIDEO)) as HTMLMediaElement[]).forEach((v) => {
-      v.ontimeupdate = null;
-      if (v.playbackRate !== 1) v.playbackRate = 1;
+      this.stopKeepSkip(v);
       this.restoreAudio(v);
+      this.hookedVideos.delete(v);
     });
 
     this.observer = new MutationObserver(() => {
-      const videoElm = (Array.from(document.querySelectorAll(Netflix.SELECTOR_VIDEO)) as HTMLMediaElement[])
-        .find((v) => !v.ontimeupdate);
-      if (!videoElm) return;
-
-      videoElm.ontimeupdate = () => {
-        const overlay = this.getOverlay(skipMode);
-        const adPlaying = this.isAdPlaying();
-
-        if (!adPlaying) {
-          overlay.parentElement && overlay.remove();
-          if (videoElm.playbackRate !== 1) videoElm.playbackRate = 1;
-          this.restoreAudio(videoElm);
-          return;
-        }
-
-        overlay.style.height = `${videoElm.clientHeight || 0}px`;
-        !overlay.parentElement && videoElm.parentElement?.appendChild(overlay);
-
-        if (skipMode === SkipMode.auto) {
-          if (videoElm.playbackRate !== Netflix.PLAYBACK_RATE_SKIP) {
-            videoElm.playbackRate = Netflix.PLAYBACK_RATE_SKIP;
-          }
-          this.muteWhileSkipping(videoElm);
-        } else if (skipMode === SkipMode.manual) {
-          if (!overlay.onclick) {
-            overlay.onclick = () => {
-              videoElm.playbackRate = Netflix.PLAYBACK_RATE_SKIP;
-              this.muteWhileSkipping(videoElm);
-              overlay.onclick = null;
-            };
-          }
-        }
-      };
+      const videos = Array.from(document.querySelectorAll(Netflix.SELECTOR_VIDEO)) as HTMLMediaElement[];
+      videos.forEach((videoElm) => this.hookVideo(videoElm, skipMode));
     });
 
     this.observer.observe(document.body, {
