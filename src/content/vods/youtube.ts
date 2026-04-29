@@ -8,15 +8,15 @@ export class YouTube extends Vod {
 
   static injection(): boolean {
     // To set IsTrusted to true
-    const deepCopy = (src) => {
+    const deepCopy = (src: any) => {
       let target = src;
       let dst = {};
       while (true) {
         try {
           dst = Object.assign(dst, Object.getOwnPropertyNames(target)
-            .reduce((p, k) => {
+            .reduce((p: any, k) => {
               try {
-                p[k] = (typeof src[k] !== 'function') ? src[k] : function (...args) {
+                p[k] = (typeof src[k] !== 'function') ? src[k] : function (...args: any[]) {
                   const result = src[k].apply(src, args);
                   if (result && typeof result === 'object') {
                     return deepCopy(result);
@@ -33,23 +33,27 @@ export class YouTube extends Vod {
       }
       return dst;
     }
-    Element.prototype["_addEventListener"] = Element.prototype.addEventListener;
+    (Element.prototype as any)["_addEventListener"] = Element.prototype.addEventListener;
     Element.prototype.addEventListener = function () {
-      if (!arguments || !arguments[0] || arguments[0].toString() !== 'click') return this._addEventListener(...arguments);
+      if (!arguments || !arguments[0] || arguments[0].toString() !== 'click') return (this as any)._addEventListener(...arguments);
 
       const args = [...arguments];
       const temp = args[1];
       args[1] = function () {
         const args2 = [...arguments];
-        const clone = deepCopy(args2[0])
+        const clone:any = deepCopy(args2[0])
         clone['isTrusted'] = true;
         clone['preventDefault'] = function () {}; 
         args2[0] = clone
         return temp(...args2);
       }
-      return this._addEventListener(...args);
+      return (this as any)._addEventListener(...args);
     }
     return true;
+  }
+
+  static getVODName(): string {
+    return 'YouTube';
   }
 
   seekToEnd(videoElm: HTMLMediaElement) {
@@ -66,9 +70,9 @@ export class YouTube extends Vod {
     (Array.from(document.querySelectorAll(YouTube.SELECTOR_VIDEO)) as HTMLMediaElement[]).forEach(v => v.ontimeupdate = null);
 
     this.observer = new MutationObserver(() => {
-      const videoElm: HTMLMediaElement = (Array.from(document.querySelectorAll(YouTube.SELECTOR_VIDEO)) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
+      const videoElm: HTMLMediaElement | undefined = (Array.from(document.querySelectorAll(YouTube.SELECTOR_VIDEO)) as HTMLMediaElement[]).find(v => !v.ontimeupdate);
       if (!videoElm) return;
-      const ontimeupdate = async (e) => {
+      const ontimeupdate = async (e: Event) => {
         const overlay = this.getOverlay(skipMode);
         if (document.querySelectorAll('.ytp-ad-player-overlay-layout').length < 1) {
           overlay.parentElement && overlay.remove();

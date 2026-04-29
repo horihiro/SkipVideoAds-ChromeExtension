@@ -20,6 +20,9 @@ export class IMASdk extends Vod {
   static injection(): boolean {
     return true;
   }
+  static getVODName(): string {
+    return 'IMA SDK';
+  }
 
   seekToEnd(videoElm: HTMLMediaElement) {
     if (!videoElm) return;
@@ -59,8 +62,9 @@ export class IMASdk extends Vod {
         const clickTarget = Array(6).fill(0).reduce((e) => {
           return e.parentElement || e;
         }, document.querySelector('iframe[id^="goog_"]'));
-        clickTarget.onclick = (e) => {
-          this.seekToEnd((Array.from(document.querySelectorAll(IMASdk.SELECTOR_VIDEO_AD)) as HTMLMediaElement[]).find(v => !v.ended));
+        clickTarget.onclick = () => {
+          const videoElm = (Array.from(document.querySelectorAll(IMASdk.SELECTOR_VIDEO_AD)) as HTMLMediaElement[]).find(v => !v.ended);
+          if (videoElm) this.seekToEnd(videoElm);
         };
       }
     });

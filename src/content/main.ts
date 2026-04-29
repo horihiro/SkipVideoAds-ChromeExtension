@@ -1,17 +1,26 @@
+/// <reference types="chrome" />
 import { SkipMode, Vod } from './vod';
 import { AmazonPrimeVideo } from './vods/amazon_prime_video';
 import { YouTube } from './vods/youtube';
 import { IMASdk } from './vods/ima_sdk';
+import { Netflix } from './vods/netflix';
 import { minimatch } from 'minimatch';
+
+type SkipRule = {
+  priority: number;
+  pattern: string;
+  skipMode: SkipMode;
+};
 
 (() => {
   const VOD_CLASSES = [
     AmazonPrimeVideo,
     YouTube,
     IMASdk,
+    Netflix,
   ];
   const DEFAULT_SKIP_MODE: SkipMode = SkipMode.auto;
-  const DEFAULT_SKIP_RULE = { priority: Number.MAX_SAFE_INTEGER, pattern: 'https://*/**', skipMode: DEFAULT_SKIP_MODE };
+  const DEFAULT_SKIP_RULE: SkipRule = { priority: Number.MAX_SAFE_INTEGER, pattern: 'https://*/**', skipMode: DEFAULT_SKIP_MODE };
   const TIMEOUT_OBSERVE_IMASDK = 10000;
 
   const loadSkipMode = async (href: string): Promise<SkipMode> => {
@@ -20,7 +29,7 @@ import { minimatch } from 'minimatch';
       await chrome.storage.local.set({ 'skipRules': [DEFAULT_SKIP_RULE] });
       return DEFAULT_SKIP_RULE.skipMode;
     }
-    const skipMode = skipRules.sort((r1, r2) => r1.priority > r2.priority ? 1 : -1).reduce((prev, skipRule) => {
+    const skipMode = skipRules.sort((r1: SkipRule, r2: SkipRule) => r1.priority > r2.priority ? 1 : -1).reduce((prev: SkipMode | null, skipRule: SkipRule) => {
       return prev || (minimatch(href, skipRule.pattern) ? skipRule.skipMode : null);
     }, null);
     console.debug('skipMode:', skipMode);
@@ -28,7 +37,7 @@ import { minimatch } from 'minimatch';
   };
 
   window.addEventListener('load', async () => {
-    let vod: Vod = null;
+    let vod: Vod | null = null;
     chrome.storage.onChanged.addListener(async (_, area) => {
       if (area !== 'local') return;
 
@@ -41,7 +50,7 @@ import { minimatch } from 'minimatch';
     const init = async () => {
       const vodClass = VOD_CLASSES.find((vodClass) => {
         if (vodClass.isAvailable()) {
-          console.debug(`${vodClass.name} detected`);
+          console.debug(`${vodClass.getVODName()} detected`);
           return true;
         }
         return false;
@@ -54,9 +63,9 @@ import { minimatch } from 'minimatch';
       observer = new MutationObserver(async () => {
         if (!IMASdk.isAvailable()) return;
 
-        observer.disconnect();
+        observer && observer.disconnect();
         observer = null;
-        console.debug('IMA SDK detected');
+        console.debug(`${IMASdk.getVODName()} detected`);
         vod = new IMASdk();
         const skipMode = await loadSkipMode(location.href);
         vod.startWatching(skipMode || DEFAULT_SKIP_MODE);
@@ -65,12 +74,12 @@ import { minimatch } from 'minimatch';
         childList: true,
         subtree: true,
       });
-      console.debug('Observing for IMA SDK...');
+      console.debug(`Observing for ${IMASdk.getVODName()}...`);
       setTimeout(() => {
         if (!observer) return;
 
-        observer.disconnect();
-        console.debug('Stopped observing for IMA SDK');
+        observer && observer.disconnect();
+        console.debug(`Stopped observing for ${IMASdk.getVODName()}`);
       }, await (async () => {
         const { timeout } = await chrome.storage.local.get(['timeout']);
         if (timeout && !isNaN(timeout)) return timeout;

@@ -9,6 +9,7 @@ Tired of waiting through endless ads? 🚀 With **Skip Video Ads**, you can enjo
 ## Supported Video Platforms
   - Amazon Prime Video
   - YouTube
+  - Netflix
   - Many video platforms based on [Google IMA (Interactive Media Ads) SDK for HTML5](https://developers.google.com/interactive-media-ads/docs/sdks/html5/)
     - Dailymotion
     - TVer
@@ -39,6 +40,7 @@ This extension can be installed from [Chrome Web Store](https://chromewebstore.g
    ```sh
    git clone <repository-url>
    cd <repository-directory>
+   ```
 
 2. Install dependencies:
    ```sh
