@@ -5,6 +5,12 @@ export class AmazonPrimeVideo extends Vod {
   protected static SELECTOR_VIDEO: string = 'video[src^="blob:"]' as const;
   protected static SELECTOR_COUNTDOWN: string = '.atvwebplayersdk-ad-timer-remaining-time' as const;
 
+  // Set the vidoe playback rate x16 during ad countdown
+  protected static PLAYBACK_RATE_DURING_AD: number = 16;
+  protected originalPlaybackRate: number = -1;
+  protected originalVolume: number = 0;
+
+
   static isAvailable(): boolean {
     return /amazon\.(com|co\.jp)\//.test(location.href);
   }
@@ -15,16 +21,6 @@ export class AmazonPrimeVideo extends Vod {
 
   static getVODName(): string {
     return 'Amazon Prime Video';
-  }
-
-  seekToEnd(videoElm: HTMLMediaElement) {
-    const remainingTime = document.querySelector(AmazonPrimeVideo.SELECTOR_COUNTDOWN);
-    if (!remainingTime) return;
-    const time = remainingTime.textContent.replace(/.*(\d{1,2}:\d{2}).*/g, '$1');
-    if (!time || time === '0:00') return;
-    const minAndSec = time.split(':').map((t) => parseInt(t));
-    if (minAndSec.length !== 2 || minAndSec.some(isNaN) || minAndSec[0] * 60 + minAndSec[1] < 1 + this.TIMEGAP) return;
-    this.skipVideo(videoElm, minAndSec[0] * 60 + minAndSec[1] - 1);
   }
 
   startWatching(skipMode: SkipMode = 'auto'): void {
@@ -43,6 +39,14 @@ export class AmazonPrimeVideo extends Vod {
         if (!remainingTime || !remainingTime.checkVisibility() || videoElm.style.visibility === 'hidden'
           || isNaN(videoElm.duration) || isNaN(videoElm.currentTime) || videoElm.currentTime <= 0 || videoElm.duration <= 0) {
           overlay.parentElement && overlay.remove();
+          if (this.originalPlaybackRate > 0) {
+            videoElm.playbackRate = this.originalPlaybackRate;
+            this.originalPlaybackRate = -1;
+          }
+          if (this.originalVolume > 0) {
+            videoElm.volume = this.originalVolume;
+            this.originalVolume = 0;
+          }
           return;
         }
 
@@ -50,12 +54,18 @@ export class AmazonPrimeVideo extends Vod {
 
         if (skipMode === SkipMode.auto) {
           await sleepAsync(100);
-          this.seekToEnd(videoElm);
+          if (this.originalPlaybackRate < 0) this.originalPlaybackRate = videoElm.playbackRate;
+          videoElm.playbackRate = AmazonPrimeVideo.PLAYBACK_RATE_DURING_AD;
+          if (this.originalVolume <= 0) this.originalVolume = videoElm.volume;
+          videoElm.volume = 0;
         } else if (skipMode === SkipMode.manual) {
           const clickTarget = overlay;
           if (!clickTarget.onclick) {
             clickTarget.onclick = () => {
-              this.seekToEnd(videoElm);
+              if (this.originalPlaybackRate < 0) this.originalPlaybackRate = videoElm.playbackRate;
+              videoElm.playbackRate = AmazonPrimeVideo.PLAYBACK_RATE_DURING_AD;
+              if (this.originalVolume <= 0) this.originalVolume = videoElm.volume;
+              videoElm.volume = 0;
               clickTarget.onclick = null;
             }
           }

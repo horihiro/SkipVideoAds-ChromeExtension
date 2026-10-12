@@ -1,4 +1,8 @@
 ## Change logs
+### [0.2.4](https://github.com/horihiro/SkipVideoAds-ChromeExtension/releases/tag/0.2.4)
+  - Bug Fix(es)
+    - Adjust Amazon Prime Video ad playback by increasing playback speed and muting audio during ads
+
 ### [0.2.3](https://github.com/horihiro/SkipVideoAds-ChromeExtension/releases/tag/0.2.3)
   - Improve feature(s)
     - Add Netflix ad skipping support
